@@ -1,47 +1,44 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, ScrollView, ActivityIndicator, TouchableOpacity, Alert } from 'react-native';
 import { getWorkoutPlan } from '../services/api';
+import { useUser } from '../services/user-context';
 
-
-const CalendarScreen = () => {
-    /*const today = new Date();
-    const year = today.getFullYear();
-    const month = today.getMonth() + 1;
-    const day = today.getDate();
-    const dateString = `${year}-${month < 10 ? '0' + month : month}-${day < 10 ? '0' + day : day}`;
-
-    return (
-        <View style={styles.container}>
-            <Calendar
-                markedDates={{
-                    [dateString]: { selected: true, marked: true, selectedColor: '#e3a89e', selectedTextColor: 'black' },
-                }}
-                style={styles.calendar}
-            />
-        </View>
-    );*/
+const CalendarScreen = ({ navigation }) => {
     const { user } = useUser();
 
+    // State to manage workout plan, loading status, and errors
     const [workoutPlan, setWorkoutPlan] = useState({});
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
 
+    // Function to fetch workout plan based on username
     const fetchWorkoutPlan = async (username) => {
         try {
-        const data = await getWorkoutPlan(username);
-        setWorkoutPlan(data.plan);
-        setLoading(false);
+            const response = await getWorkoutPlan(username);
+            console.log('API Response:', response); // Debugging the response
+
+            if (response && response.plan) {
+                setWorkoutPlan(response.plan);
+            } else {
+                console.log('No plan data available');
+                setWorkoutPlan({});
+            }
+            setLoading(false);
         } catch (err) {
-        setError(err);
-        setLoading(false);
+            console.error('Error fetching workout plan:', err);
+            setError(err);
+            setLoading(false);
         }
     };
 
+    // Fetch workout plan when component mounts or username changes
     useEffect(() => {
-        const username = user.username; // Replace with actual username or pass as a prop
-        fetchWorkoutPlan(username);
-    }, []);
+        if (user && user.username) {
+            fetchWorkoutPlan(user.username);
+        }
+    }, [user]);
 
+    // Render different UI states based on data and loading status
     if (loading) {
         return <ActivityIndicator size="large" color="#0000ff" />;
     }
@@ -54,18 +51,32 @@ const CalendarScreen = () => {
         Alert.alert(day, workoutPlan[day].join('\n'));
     };
 
-    return (
-        <ScrollView style={styles.container}>
-            {Object.keys(workoutPlan).map((day, index) => (
-                <TouchableOpacity key={index} style={styles.dayBox} onPress={() => handleDayPress(day)}>
-                <Text style={styles.dayTitle}>{day}</Text>
-                {workoutPlan[day].map((exercise, i) => (
-                    <Text key={i} style={styles.exerciseText}>{exercise}</Text>
+    if (user.hasPlan) {
+        return (
+            <ScrollView style={styles.container}>
+                {Object.keys(workoutPlan).map((day, index) => (
+                    <TouchableOpacity key={index} style={styles.dayBox} onPress={() => handleDayPress(day)}>
+                    <Text style={styles.dayTitle}>{day}</Text>
+                    {workoutPlan[day].map((exercise, i) => (
+                        <Text key={i} style={styles.exerciseText}>{exercise}</Text>
+                    ))}
+                    </TouchableOpacity>
                 ))}
+            </ScrollView>
+        );
+    } else {
+        return (
+            <View style={styles.containerNoPlan}>
+                <Text style={styles.textStyle}>No fitness plan available</Text>
+                <TouchableOpacity
+                    style={styles.button}
+                    onPress={() => navigation.navigate('UserInfo')}
+                >
+                    <Text style={styles.buttonText}>Generate a fitness plan</Text>
                 </TouchableOpacity>
-            ))}
-        </ScrollView>
-    );
+            </View>
+        );
+    }
 };
 
 const styles = StyleSheet.create({
@@ -79,6 +90,16 @@ const styles = StyleSheet.create({
         flex: 1,
         padding: 16,
       },
+    containerNoPlan: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+        paddingBottom: 25
+    },
+    textStyle: {
+        fontSize: 28,
+        paddingBottom: 10,
+    },
       dayBox: {
         marginBottom: 16,
         padding: 16,
@@ -91,6 +112,18 @@ const styles = StyleSheet.create({
         borderWidth: 1,
         borderColor: '#ddd',
       },
+      button: {
+        backgroundColor: '#3c3e56',
+        paddingVertical: 20,
+        paddingHorizontal: 20,
+        borderRadius: 25,
+        justifyContent: 'center',
+        alignItems: 'center',
+        },
+        buttonText: {
+            color: 'white',
+            fontSize: 18,
+        },
       dayTitle: {
         fontSize: 18,
         fontWeight: 'bold',

@@ -28,10 +28,12 @@ export const getExercisesByTypeAndMuscleGroup = (type, muscleGroup) => {
 
 export const getWorkoutPlan = async (username) => {
     try {
-        const response = await axios.get(`${API_URL}/workoutplan/${username}/`);
-        return response.data;
-      } catch (error) {
+        const response = await fetch(`${API_URL}/workoutplan/${username}/`);
+        const data = await response.json();
+        console.log('API Response:', data);  // Check the response from the API
+        return data;
+    } catch (error) {
         console.error('Error fetching workout plan:', error);
         throw error;
-      }
+    }
 };

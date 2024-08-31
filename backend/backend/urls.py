@@ -14,7 +14,7 @@ urlpatterns = [
     path('api/login/', LoginView.as_view(), name='login'),
     path('api/userInfo/', UserInfoView.as_view(), name='userInfo'),
     path('api/', include(router.urls)),
-    path('workoutplan/<str:username>/', WorkoutPlanView.as_view(), name='workout_plan'),
+    path('api/workoutplan/<str:username>/', WorkoutPlanView.as_view(), name='workout_plan'),
 ]
 
 if settings.DEBUG:

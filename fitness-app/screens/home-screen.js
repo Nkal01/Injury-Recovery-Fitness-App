@@ -6,39 +6,39 @@ import { useUser } from '../services/user-context';
 const HomeScreen = ({ navigation }) => {
     const { user } = useUser();
 
-    const [workoutPlan, setWorkoutPlan] = useState({});
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState(null);
-
-    const fetchWorkoutPlan = async (username) => {
-        try {
-        const data = await getWorkoutPlan(username);
-        setWorkoutPlan(data.plan);
-        setLoading(false);
-        } catch (err) {
-        setError(err);
-        setLoading(false);
-        }
-    };
-
-    useEffect(() => {
-        const username = user.username; // Replace with actual username or pass as a prop
-        fetchWorkoutPlan(username);
-    }, []);
-
-    if (loading) {
-        return <ActivityIndicator size="large" color="#0000ff" />;
-    }
-
-    if (error) {
-        return <Text>Error fetching workout plan: {error.message}</Text>;
-    }
-
-    const handleDayPress = (day) => {
-        Alert.alert(day, workoutPlan[day].join('\n'));
-    };
-
     if (user.hasPlan) {
+        const [workoutPlan, setWorkoutPlan] = useState({});
+        const [loading, setLoading] = useState(true);
+        const [error, setError] = useState(null);
+    
+        const fetchWorkoutPlan = async (username) => {
+            try {
+                const data = await getWorkoutPlan(username);
+                setWorkoutPlan(data.plan || {});
+                setLoading(false);
+            } catch (err) {
+                setError(err);
+                setLoading(false);
+            }
+        };
+    
+        useEffect(() => {
+            const username = user.username; // Replace with actual username or pass as a prop
+            fetchWorkoutPlan(username);
+        }, []);
+    
+        if (loading) {
+            return <ActivityIndicator size="large" color="#0000ff" />;
+        }
+    
+        if (error) {
+            return <Text>Error fetching workout plan: {error.message}</Text>;
+        }
+    
+        const handleDayPress = (day) => {
+            Alert.alert(day, workoutPlan[day].join('\n'));
+        };
+
         return (
             <ScrollView style={styles.container}>
                 {Object.keys(workoutPlan).map((day, index) => (

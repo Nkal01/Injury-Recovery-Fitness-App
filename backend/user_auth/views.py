@@ -106,8 +106,8 @@ class WorkoutPlanView(APIView):
         user = get_object_or_404(CustomUser, username=username)
         workout_plan = WorkoutPlan.objects.filter(user=user).first()
         if workout_plan:
-            # Assuming 'plan_data' is a JSON field in your model
-            plan_data = json.loads(workout_plan.plan_data)
+            plan_data = workout_plan.plan_data
+            print(plan_data)
             return JsonResponse({'plan': plan_data})
         else:
             return JsonResponse({'error': 'Workout plan not found'}, status=404)
