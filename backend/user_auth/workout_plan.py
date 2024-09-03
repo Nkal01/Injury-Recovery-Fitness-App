@@ -49,23 +49,36 @@ def generate_plan(user_data):
         elif exercise_difficulty < user_skill_level:
             user_exercise_df.at[i, 'Suitability'] += bonus / 2
 
-    # Sort exercises by suitability score and select top exercises
-    top_exercises = user_exercise_df.sort_values(by='Suitability', ascending=False).head(12)
+    # Define the suitability threshold
+    suitability_threshold = 0.5  # Adjust this threshold based on your needs
+
+    # Filter exercises based on the threshold
+    valid_exercises = user_exercise_df[user_exercise_df['Suitability'] >= suitability_threshold]
+
+    # Calculate the total number of exercises needed
+    total_exercises_needed = 4 * int(user_data['preferredWorkoutTimes'])
+
+    # If not enough valid exercises, duplicate some to meet the requirement
+    if len(valid_exercises) < total_exercises_needed:
+        repetitions_needed = total_exercises_needed - len(valid_exercises)
+        valid_exercises = valid_exercises._append([valid_exercises] * (repetitions_needed // len(valid_exercises) + 1), ignore_index=True)
+        valid_exercises = valid_exercises.head(total_exercises_needed)
 
     # Format the plan for response
     weekly_plan = {}
-    num_workouts = int(user_data['preferredWorkoutTimes'])
-    exercises_per_workout = len(top_exercises) // num_workouts
+    exercises_per_day = 4  # Number of exercises per day
+    num_days = total_exercises_needed // exercises_per_day  # Calculate the number of days needed
 
-    for i in range(num_workouts):
-        start_index = i * exercises_per_workout
-        end_index = start_index + exercises_per_workout
-        workout_exercises = top_exercises.iloc[start_index:end_index]['Name'].tolist()
+    for i in range(num_days):
+        start_index = i * exercises_per_day
+        end_index = start_index + exercises_per_day
+        workout_exercises = valid_exercises.iloc[start_index:end_index]['Name'].tolist()
         weekly_plan[f'Day {i + 1}'] = workout_exercises
 
     # Save the workout plan
     user = CustomUser.objects.get(username=user_data['username'])
     workout_plan = WorkoutPlan(user=user, plan_data=weekly_plan)
     workout_plan.save()
+    print (weekly_plan)
 
     return weekly_plan

@@ -107,7 +107,6 @@ class WorkoutPlanView(APIView):
         workout_plan = WorkoutPlan.objects.filter(user=user).first()
         if workout_plan:
             plan_data = workout_plan.plan_data
-            print(plan_data)
             return JsonResponse({'plan': plan_data})
         else:
             return JsonResponse({'error': 'Workout plan not found'}, status=404)

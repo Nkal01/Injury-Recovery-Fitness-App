@@ -1,4 +1,4 @@
-import React, { useContext } from 'react';
+import React, { useContext, useState, useEffect } from 'react';
 import { createDrawerNavigator, DrawerItemList } from '@react-navigation/drawer';
 import { Image, Button, View, Text, SafeAreaView, Alert, TouchableOpacity } from 'react-native';
 import { HomeStack, CalendarStack, ProfileStack, LibraryStack } from './stack';
@@ -31,7 +31,7 @@ export const MyDrawer = ({ navigation }) => {
   };
 
   return (
-    <Drawer.Navigator initialRouteName={user.hasPlan ? "Calendar" : "Home"}
+    <Drawer.Navigator initialRouteName={'Home'}
       drawerContent={(props) => {
         return (
           <SafeAreaView style={{ flex: 1, paddingTop: 20, backgroundColor: 'white' }}>
@@ -64,27 +64,15 @@ export const MyDrawer = ({ navigation }) => {
           drawerIcon: () => <MaterialCommunityIcons name="account" size={26} />,
         }}
       />
-      {user.has_plan ? (
-        <Drawer.Screen
-          name="Calendar"
-          component={CalendarStack}
-          options={{
-            title: 'Calendar',
-            drawerActiveTintColor: 'black',
-            drawerIcon: () => <MaterialCommunityIcons name="calendar" size={26} />,
-          }}
-        />
-      ) : (
-        <Drawer.Screen
-          name="Home"
-          component={HomeStack}
-          options={{
-            title: 'Home',
-            drawerActiveTintColor: 'black',
-            drawerIcon: () => <Ionicons name="home" size={26} />,
-          }}
-        />
-      )}
+      <Drawer.Screen
+        name="Home"
+        component={HomeStack}
+        options={{
+          title: 'Home',
+          drawerActiveTintColor: 'black',
+          drawerIcon: () => <Ionicons name="home" size={26} />,
+        }}
+      />
       <Drawer.Screen
         name="ExerciseLibrary"
         component={LibraryStack}

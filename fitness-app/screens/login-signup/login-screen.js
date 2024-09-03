@@ -13,15 +13,12 @@ const LoginScreen = ({ navigation }) => {
     try {
         const response = await login(username, password);
         const userData = response.data.user;
-        const has_plan = userData.has_plan;
 
         Alert.alert('Login Success', 'Welcome, ' + username + '!');
         console.log(userData);
         setUser(userData);
 
-        navigation.navigate('Drawer', {
-            screen: has_plan ? 'Calendar' : 'Home',
-        });
+        navigation.navigate('Drawer', {screen: 'Home',});
 
     } catch (error) {
         Alert.alert('Login Failed', 'Invalid credentials');

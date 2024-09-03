@@ -98,6 +98,9 @@ class Exercise(models.Model):
         blank=True,
         null=True
     )
+    week1 = models.CharField(max_length=100)
+    week2 = models.CharField(max_length=100)
+    week3 = models.CharField(max_length=100)
 
     def __str__(self):
         return self.name

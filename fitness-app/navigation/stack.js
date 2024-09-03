@@ -11,11 +11,11 @@ import SignupScreen from '../screens/login-signup/signup-screen';
 import { HomeTabs } from './tabs';
 import WorkoutsScreen from '../screens/workouts-screen';
 import UserInfoForm from '../screens/user-info-form';
-import Calendar from '../screens/calendar';
 import LibraryScreen from '../screens/library/library-screen';
 import UserProfileScreen from '../screens/profiles/user-profile';
 import MuscleGroupScreen from '../screens/library/muscle-group-screen';
 import ExercisesScreen from '../screens/library/exercises-screen';
+import PlanDayExercises from '../screens/workout-plan/workout-plan-day';
 
 const Stack = createStackNavigator();
 
@@ -72,32 +72,7 @@ export const HomeStack = () => {
           ),
         })}
       />
-    </Stack.Navigator>
-  );
-};
-
-export const CalendarStack = () => {
-  return (
-    <Stack.Navigator
-      screenOptions={({ navigation }) => ({
-        ...navOptions(navigation),
-        headerTitleAlign: 'center',
-      })}
-    >
-      <Stack.Screen name="Calendar" component={Calendar} />
-    </Stack.Navigator>
-  );
-};
-
-export const LibraryStack = () => {
-  return (
-    <Stack.Navigator
-      screenOptions={({ navigation }) => ({
-        ...navOptions(navigation),
-        headerTitleAlign: 'center',
-      })}
-    >
-      <Stack.Screen name="Exercise Library" component={LibraryScreen} 
+      <Stack.Screen name="PlanDayExercises" component={PlanDayExercises} 
         options={({ navigation }) => ({
           headerLeft: () => (
             <Ionicons
@@ -110,6 +85,19 @@ export const LibraryStack = () => {
           ),
         })}
       />
+    </Stack.Navigator>
+  );
+};
+
+export const LibraryStack = () => {
+  return (
+    <Stack.Navigator
+      screenOptions={({ navigation }) => ({
+        ...navOptions(navigation),
+        headerTitleAlign: 'center',
+      })}
+    >
+      <Stack.Screen name="Exercise Library" component={LibraryScreen} />
       <Stack.Screen name="MuscleGroup" component={MuscleGroupScreen} 
         options={({ navigation }) => ({
           headerLeft: () => (

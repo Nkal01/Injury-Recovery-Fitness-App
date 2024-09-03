@@ -10,8 +10,8 @@ export const login = (username, password) => {
     return axios.post(`${API_URL}/login/`, { username, password });
 };
 
-export const userInfo = (username, sex, age, height, weight, fitnessLevel, goals, injuries, preferredWorkoutTimes, availableEquipment, hasPlan) => {
-    return axios.post(`${API_URL}/userInfo/`, { username, sex, age, height, weight, fitnessLevel, goals, injuries, preferredWorkoutTimes, availableEquipment, hasPlan });
+export const userInfo = (username, sex, age, height, weight, fitnessLevel, goals, injuries, preferredWorkoutTimes, availableEquipment, has_plan) => {
+    return axios.post(`${API_URL}/userInfo/`, { username, sex, age, height, weight, fitnessLevel, goals, injuries, preferredWorkoutTimes, availableEquipment, has_plan });
 };
 
 export const getExercisesByType = (type) => {
@@ -23,6 +23,12 @@ export const getExercisesByType = (type) => {
 export const getExercisesByTypeAndMuscleGroup = (type, muscleGroup) => {
     return axios.get(`${API_URL}/exercises/`, {
         params: { type, muscle_group: muscleGroup },
+    });
+};
+
+export const getExercisesByName = (name) => {
+    return axios.get(`${API_URL}/exercises/`, {
+        params: { name },
     });
 };
 

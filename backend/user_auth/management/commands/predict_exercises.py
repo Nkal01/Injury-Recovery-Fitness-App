@@ -1,84 +1,89 @@
-import pandas as pd
 import joblib
+import pandas as pd
 from tensorflow.keras.models import load_model
 
-# Load the trained model and preprocessor
-model = load_model('exercise_suitability_model.h5')
-preprocessor = joblib.load('preprocessor.pkl')
 
-# Load the exercise data
-exercise_data = pd.read_excel('exercises.xlsx')
+# Load model and preprocessor
+model = load_model(r'C:\Users\Nkal0\OneDrive\Documents\fProject\backend\user_auth\management\commands\exercise_suitability_model.h5')
+preprocessor = joblib.load(r'C:\Users\Nkal0\OneDrive\Documents\fProject\backend\user_auth\management\commands\preprocessor.pkl')
 
-# Define the new user's data
-new_user = {
-    'Skill': 'Intermediate',
-    'Age': 26,
-    'Injury': 'Torn ACL',
-    'Equipment': 'Resistance Band',
-    'BMI': 23
-}
+def generate_plan():
+    # Load exercise data
+    exercise_data = pd.read_excel(r'C:\Users\Nkal0\OneDrive\Documents\fProject\backend\user_auth\management\commands\exercises.xlsx')
 
-# Map skill and difficulty levels to numerical values for comparison
-difficulty_mapping = {
-    'Beginner': 1,
-    'Intermediate': 2,
-    'Advanced': 3
-}
+    # Convert user data to appropriate format for prediction
+    new_user = {
+        'Skill': 'Intermediate',
+        'Age': '26',
+        'Injury': 'Torn Achilles',
+        'Equipment': 'Gym',
+        'BMI': 32
+    }
 
-# Convert user's skill to its corresponding numerical value
-user_skill_level = difficulty_mapping[new_user['Skill']]
+    # Map fitness level to numerical values for prediction
+    difficulty_mapping = {'Beginner': 1, 'Intermediate': 2, 'Advanced': 3}
+    user_skill_level = difficulty_mapping.get(new_user['Skill'], 0)
 
-# Add a Difficulty column to exercise_data using the mapping
-exercise_data['Difficulty_Level'] = exercise_data['Difficulty'].map(difficulty_mapping)
+    # Add a Difficulty column to exercise_data
+    exercise_data['Difficulty_Level'] = exercise_data['Difficulty'].map(difficulty_mapping)
 
-# Repeat the user data for each exercise and merge with exercise data
-user_df = pd.DataFrame([new_user] * len(exercise_data))
-user_exercise_df = pd.concat([user_df, exercise_data[['ID', 'Difficulty_Level']]], axis=1)
+    # Prepare user_exercise_df
+    selected_columns = ['ID', 'Name', 'Difficulty_Level']
+    user_df = pd.DataFrame([new_user] * len(exercise_data))
+    user_exercise_df = pd.concat([user_df, exercise_data[selected_columns]], axis=1)
+    user_exercise_df.rename(columns={'ID': 'Exercise ID'}, inplace=True)
 
-# Rename the exercise ID column to match the preprocessor's expected format
-user_exercise_df.rename(columns={'ID': 'Exercise ID'}, inplace=True)
+    # Preprocess the data
+    X_new_user = preprocessor.transform(user_exercise_df)
 
-# Preprocess the data
-X_new_user = preprocessor.transform(user_exercise_df)
+    # Predict suitability
+    suitability_scores = model.predict(X_new_user)
 
-# Predict suitability
-suitability_scores = model.predict(X_new_user)
+    # Adjust the suitability score based on difficulty match
+    bonus = 0.1
+    user_exercise_df['Suitability'] = suitability_scores.flatten()
+    for i, row in user_exercise_df.iterrows():
+        exercise_difficulty = row['Difficulty_Level']
+        if exercise_difficulty == user_skill_level:
+            user_exercise_df.at[i, 'Suitability'] += bonus
+        elif (user_skill_level - exercise_difficulty) == 1:
+            user_exercise_df.at[i, 'Suitability'] += bonus / 2
+        elif (user_skill_level - exercise_difficulty) == 2:
+            user_exercise_df.at[i, 'Suitability'] += bonus / 3
 
-# Adjust the suitability score based on difficulty match
-bonus = 0.1  # Adjust the bonus value as needed
-user_exercise_df['Suitability'] = suitability_scores.flatten()
+    # Define the suitability threshold
+    suitability_threshold = 0.5  # Adjust this threshold based on your needs
 
-for i, row in user_exercise_df.iterrows():
-    exercise_difficulty = row['Difficulty_Level']
-    if exercise_difficulty == user_skill_level:
-        user_exercise_df.at[i, 'Suitability'] += bonus
-    elif exercise_difficulty < user_skill_level:
-        user_exercise_df.at[i, 'Suitability'] += bonus / 2  # Half the bonus for easier exercises
+    # Filter exercises based on the threshold
+    valid_exercises = user_exercise_df[user_exercise_df['Suitability'] >= suitability_threshold]
+    valid_exercises = valid_exercises.sort_values(by='Suitability', ascending=False)
 
-# Sort exercises by suitability score in descending order and select the top 12
-top_exercises = user_exercise_df.sort_values(by='Suitability', ascending=False).head(12)
+    print(valid_exercises)
 
-# Define number of workouts per week (hardcoded for now)
-workouts_per_week = 3
+    # Calculate the total number of exercises needed
+    total_exercises_needed = 4 * int(3)
 
-# Calculate the number of exercises per workout
-exercises_per_workout = len(top_exercises) // workouts_per_week
+    # If not enough valid exercises, duplicate some to meet the requirement
+    if len(valid_exercises) < total_exercises_needed:
+        repetitions_needed = total_exercises_needed - len(valid_exercises)
+        valid_exercises = valid_exercises._append([valid_exercises] * (repetitions_needed // len(valid_exercises) + 1), ignore_index=True)
+        valid_exercises = valid_exercises.head(total_exercises_needed)
 
-# Create a weekly fitness plan
-weekly_plan = {}
+    # Format the plan for response
+    weekly_plan = {}
+    exercises_per_day = 4  # Number of exercises per day
+    num_days = total_exercises_needed // exercises_per_day  # Calculate the number of days needed
 
-for i in range(workouts_per_week):
-    weekly_plan[f'Workout {i+1}'] = top_exercises.iloc[i * exercises_per_workout:(i + 1) * exercises_per_workout]
+    for i in range(num_days):
+        start_index = i * exercises_per_day
+        end_index = start_index + exercises_per_day
+        workout_exercises = valid_exercises.iloc[start_index:end_index]['Name'].tolist()
+        weekly_plan[f'Day {i + 1}'] = workout_exercises
 
-# Cross-reference the exercise IDs with the original exercise data to get detailed info
-for workout, exercises in weekly_plan.items():
-    print(f"\n{workout}:")
-    for index, exercise in exercises.iterrows():
-        exercise_id = exercise['Exercise ID']
-        # Retrieve the exercise details from the original exercise_data
-        exercise_info = exercise_data[exercise_data['ID'] == exercise_id].iloc[0]
-        print(f"- {exercise_info['Name']} ({exercise_info['Muscle Group']}) {exercise_info['Type']} {exercise_info['Equipment']}")
+    # Save the workout plan
 
-# Optional: Save the weekly fitness plan to an Excel file
-weekly_plan_df = pd.DataFrame(dict([(k, v['Exercise ID']) for k, v in weekly_plan.items()]))
-weekly_plan_df.to_excel('weekly_fitness_plan.xlsx', index=False)
+    print(weekly_plan)
+
+    return weekly_plan
+
+generate_plan()

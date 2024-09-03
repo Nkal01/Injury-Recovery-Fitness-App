@@ -22,7 +22,16 @@ def is_suitable(user, exercise):
             return False
 
     # Check Equipment
-    if not pd.isna(exercise['Equipment']) and user['Equipment'] != exercise['Equipment']:
+    equipment_hierarchy = {'None': 0, 'Resistance Band': 1, 'Gym': 2}
+
+    # Handle NaN values as 'None' for both user and exercise equipment
+    user_equipment = user['Equipment'] if pd.notna(user['Equipment']) else 'None'
+    exercise_equipment = exercise['Equipment'] if pd.notna(exercise['Equipment']) else 'None'
+
+    user_equipment_level = equipment_hierarchy[user_equipment]
+    exercise_equipment_level = equipment_hierarchy[exercise_equipment]
+
+    if user_equipment_level < exercise_equipment_level:
         return False
 
     # Check BMI

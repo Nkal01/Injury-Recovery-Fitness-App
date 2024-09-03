@@ -19,7 +19,6 @@ export default function App() {
             <RootStack.Screen name="Start" component={StartStack} options={{ headerShown: false }} />
             <RootStack.Screen name="Drawer" component={MyDrawer} options={{ headerShown: false }} />
             <RootStack.Screen name="Home" component={HomeStack} options={{ headerShown: false }} />
-            <RootStack.Screen name="Calendar" component={CalendarStack} options={{ headerShown: false }} />
             <RootStack.Screen name="User Profile" component={ProfileStack} options={{ headerShown: false }} />
           </RootStack.Navigator>
           <StatusBar style='light' backgroundColor='black' />
