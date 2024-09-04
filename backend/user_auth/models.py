@@ -43,6 +43,7 @@ class CustomUser(AbstractUser):
     preferred_workout_times = models.CharField(max_length=1, choices=WORKOUT_TIMES_CHOICES, null=True, blank=True)
     available_equipment = models.CharField(max_length=20, choices=EQUIPMENT_CHOICES, null=True, blank=True)
     has_plan = models.BooleanField(null=True, blank=True)
+    plan_week = models.IntegerField(null=True, blank=True)
 
     groups = models.ManyToManyField(
         'auth.Group',
@@ -98,9 +99,9 @@ class Exercise(models.Model):
         blank=True,
         null=True
     )
-    week1 = models.CharField(max_length=100)
-    week2 = models.CharField(max_length=100)
-    week3 = models.CharField(max_length=100)
+    week1 = models.CharField(max_length=100, null=True, blank=True)
+    week2 = models.CharField(max_length=100, null=True, blank=True)
+    week3 = models.CharField(max_length=100, null=True, blank=True)
 
     def __str__(self):
         return self.name

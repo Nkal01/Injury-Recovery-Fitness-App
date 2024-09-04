@@ -9,8 +9,6 @@ const HomeScreen = ({ navigation }) => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
 
-    console.log(user.hasPlan)
-
     // Function to fetch workout plan based on username
     const fetchWorkoutPlan = async (username) => {
         try {
@@ -51,14 +49,21 @@ const HomeScreen = ({ navigation }) => {
         navigation.navigate('PlanDayExercises', { exercises: workoutPlan[day] });
     };
 
-    if (user.hasPlan){
+    if (user.has_plan){
         return (
             <ScrollView style={styles.container}>
                 {Object.keys(workoutPlan).map((day, index) => (
                     <TouchableOpacity key={index} style={styles.dayBox} onPress={() => handleDayPress(day)}>
-                        <Text style={styles.dayTitle}>{day}</Text>
+                        <View style={styles.dayTitleContainer}>
+                            <Text style={styles.dayTitle}>{day}</Text>
+                        </View>
                         {workoutPlan[day].map((exercise, i) => (
-                            <Text key={i} style={styles.exerciseText}>{exercise}</Text>
+                            <View key={i}>
+                                <Text style={styles.exerciseText}>{exercise}</Text>
+                                {i < workoutPlan[day].length - 1 && (
+                                    <View style={styles.separator} />
+                                )}
+                            </View>
                         ))}
                     </TouchableOpacity>
                 ))}
@@ -100,8 +105,12 @@ const styles = StyleSheet.create({
         shadowOpacity: 0.1,
         shadowRadius: 4,
         borderWidth: 1,
-        borderColor: '#ddd',
+        borderColor: 'black',
       },
+    dayTitleContainer: {
+        backgroundColor: '#f5f5f5',
+        alignSelf: 'center'
+    },
     button: {
         backgroundColor: '#3c3e56',
         paddingVertical: 20,
@@ -126,6 +135,11 @@ const styles = StyleSheet.create({
     exerciseText: {
         fontSize: 16,
         color: '#333',
+    },
+    separator: {
+        height: 1,
+        backgroundColor: 'black',
+        marginVertical: 5,
     },
 });
 

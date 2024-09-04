@@ -24,7 +24,7 @@ class LoginView(APIView):
     def post(self, request):
         username = request.data.get('username')
         password = request.data.get('password')
-        # Authenticate using the CustomUser model
+
         user = authenticate(username=username, password=password)
         if user:
             token, created = Token.objects.get_or_create(user = user)
@@ -47,6 +47,7 @@ class UserInfoView(APIView):
         preferred_workout_times = request.data.get('preferredWorkoutTimes')
         available_equipment = request.data.get('availableEquipment')
         has_plan = request.data.get('hasPlan')
+        plan_week = request.data.get('planWeek')
 
         try:
             user = CustomUser.objects.get(username=username)
@@ -62,6 +63,7 @@ class UserInfoView(APIView):
         user.preferred_workout_times = preferred_workout_times
         user.available_equipment = available_equipment
         user.has_plan = has_plan
+        user.plan_week = plan_week
         user.save()
 
         user_data = {
@@ -75,8 +77,8 @@ class UserInfoView(APIView):
             'preferredWorkoutTimes': preferred_workout_times,
         }
 
+        print(user_data)
         plan = generate_plan(user_data)
-        print(plan)
         return Response({"message": "User profile updated and plan generated successfully", "plan": plan}, status=status.HTTP_200_OK)
 
 class ExerciseViewSet(viewsets.ModelViewSet):

@@ -34,7 +34,8 @@ const UserInfoForm = ({ navigation }) => {
       injuries,
       preferredWorkoutTimes,
       availableEquipment,
-      hasPlan: true,
+      has_plan: true,
+      plan_week: 1,
     };
 
     setUser(updatedUser);
@@ -47,11 +48,11 @@ const UserInfoForm = ({ navigation }) => {
         heightNum,
         weightNum,
         fitnessLevel,
-        null,
         injuries,
         preferredWorkoutTimes,
         availableEquipment,
-        true
+        true,
+        1,
       );
       navigation.navigate('Home');
       Alert.alert('Your personalized plan has been generated!');

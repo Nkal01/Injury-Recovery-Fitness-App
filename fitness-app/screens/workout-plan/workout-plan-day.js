@@ -1,12 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, ActivityIndicator, FlatList, TouchableOpacity, Image } from 'react-native';
 import { getExercisesByName } from '../../services/api';
+import { useUser } from '../../services/user-context';
 
 const PlanDayExercises = ({ route }) => {
     const { exercises } = route.params; // Array of exercise names for the day
     const [exerciseDetails, setExerciseDetails] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+
+    const { user } = useUser();
 
     useEffect(() => {
         const fetchExercises = async () => {
@@ -36,25 +39,43 @@ const PlanDayExercises = ({ route }) => {
     if (error) {
         return <Text>Error fetching exercises: {error.message}</Text>;
     }
+    
 
-    const renderItem = ({ item }) => (
-        <TouchableOpacity style={styles.exerciseCard}>
-            {item.image ? (
-                <Image
-                    source={{ uri: item.image }}
-                    style={styles.exerciseImage}
-                    resizeMode="cover"
-                />
-            ) : (
-                <View style={styles.placeholderImage} />
-            )}
-            <Text style={styles.exerciseName}>{item.name}</Text>
-            <Text style={styles.exerciseDescription}>{item.description}</Text>
-            <Text style={styles.exerciseDetails}>
-                {item.equipment && item.equipment !== "nan" ? `Equipment needed: ${item.equipment}` : 'Equipment needed: None'}
-            </Text>
-        </TouchableOpacity>
-    );
+    const renderItem = ({ item }) => {
+        let repetition;
+        let user_week = user.plan_week;
+    
+        // Determine the repetition based on the user's current week
+        if (user_week == 1) {
+            repetition = item.week1;
+        } else if (user_week == 2) {
+            repetition = item.week2;
+        } else if (user_week == 3) {
+            repetition = item.week3;
+        }
+    
+        return (
+            <TouchableOpacity style={styles.exerciseCard}>
+                {item.image ? (
+                    <Image
+                        source={{ uri: item.image }}
+                        style={styles.exerciseImage}
+                        resizeMode="cover"
+                    />
+                ) : (
+                    <View style={styles.placeholderImage} />
+                )}
+                <Text style={styles.exerciseName}>{item.name}</Text>
+                <Text style={styles.exerciseRepetition}>{repetition}</Text>
+                <Text style={styles.exerciseDescription}>{item.description}</Text>
+                <Text style={styles.exerciseDetails}>
+                    {item.equipment && item.equipment !== "nan"
+                        ? `Equipment needed: ${item.equipment}`
+                        : 'Equipment needed: None'}
+                </Text>
+            </TouchableOpacity>
+        );
+    };
 
     return (
         <FlatList
@@ -76,11 +97,13 @@ const styles = StyleSheet.create({
         shadowOpacity: 0.1,
         shadowRadius: 4,
         borderWidth: 1,
-        borderColor: '#ddd',
+        marginHorizontal: 10,
+        marginVertical: 10,
+        borderColor: 'black',
     },
     exerciseImage: {
         width: '100%',
-        height: 300,
+        height: 400,
         borderRadius: 8,
     },
     placeholderImage: {
@@ -92,7 +115,7 @@ const styles = StyleSheet.create({
     exerciseName: {
         fontSize: 18,
         fontWeight: 'bold',
-        marginVertical: 8,
+        marginVertical: 5,
     },
     exerciseDescription: {
         fontSize: 16,
@@ -101,6 +124,10 @@ const styles = StyleSheet.create({
     exerciseDetails: {
         fontSize: 14,
         color: '#333',
+    },
+    exerciseRepetition: {
+        fontSize: 18,
+        fontWeight: 'bold',
     },
 });
 

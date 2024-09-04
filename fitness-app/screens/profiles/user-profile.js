@@ -56,13 +56,6 @@ const UserProfileScreen = () => {
         </>
       ) : null}
       
-      {user.goals ? (
-        <>
-          <Text style={styles.label}>Goals:</Text>
-          <Text style={styles.value}>{user.goals}</Text>
-        </>
-      ) : null}
-      
       {user.injuries ? (
         <>
           <Text style={styles.label}>Injuries:</Text>

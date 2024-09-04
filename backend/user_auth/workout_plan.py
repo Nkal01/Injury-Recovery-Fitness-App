@@ -46,14 +46,19 @@ def generate_plan(user_data):
         exercise_difficulty = row['Difficulty_Level']
         if exercise_difficulty == user_skill_level:
             user_exercise_df.at[i, 'Suitability'] += bonus
-        elif exercise_difficulty < user_skill_level:
+        elif (user_skill_level - exercise_difficulty) == 1:
             user_exercise_df.at[i, 'Suitability'] += bonus / 2
+        elif (user_skill_level - exercise_difficulty) == 2:
+            user_exercise_df.at[i, 'Suitability'] += bonus / 3
 
     # Define the suitability threshold
     suitability_threshold = 0.5  # Adjust this threshold based on your needs
 
     # Filter exercises based on the threshold
     valid_exercises = user_exercise_df[user_exercise_df['Suitability'] >= suitability_threshold]
+    valid_exercises = valid_exercises.sort_values(by='Suitability', ascending=False)
+
+    print(valid_exercises)
 
     # Calculate the total number of exercises needed
     total_exercises_needed = 4 * int(user_data['preferredWorkoutTimes'])
@@ -79,6 +84,5 @@ def generate_plan(user_data):
     user = CustomUser.objects.get(username=user_data['username'])
     workout_plan = WorkoutPlan(user=user, plan_data=weekly_plan)
     workout_plan.save()
-    print (weekly_plan)
 
     return weekly_plan
