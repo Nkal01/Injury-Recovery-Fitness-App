@@ -10,35 +10,25 @@ const UserInfoForm = ({ navigation }) => {
   const [age, setAge] = useState("");
   const [height, setHeight] = useState("");
   const [weight, setWeight] = useState("");
-  const [fitnessLevel, setFitnessLevel] = useState("");
+  const [fitness_level, setFitnessLevel] = useState("");
   const [injuries, setInjuries] = useState("");
-  const [preferredWorkoutTimes, setPreferredWorkoutTimes] = useState("");
-  const [availableEquipment, setAvailableEquipment] = useState("");
+  const [preferred_workout_times, setPreferredWorkoutTimes] = useState("");
+  const [available_equipment, setAvailableEquipment] = useState("");
+
+  const fitnessLevelDescriptions = {
+    Beginner: "This level is suited for users in the early stages of rehabilitation or those with limited prior athletic experience. If you are recovering from a recent injury or surgery, have restricted movement, or are experiencing significant muscle weakness, this is the right level.",
+    Intermediate: "This level is designed for users in the mid-stage of rehabilitation or those who have some athletic background but are not yet ready for high-intensity exercise. If you've made progress in your recovery but still need to build strength, endurance, and flexibility, this is your level.",
+    Advanced: "This level is intended for users in the late stages of rehabilitation or those with a high level of previous athletic experience. If you are nearing full recovery and looking to restore athletic performance or resume intense physical activities, this is the right choice."
+  };
 
   const handleSubmit = async () => {
-    if (!sex || !age || !height || !weight || !fitnessLevel || !injuries || !preferredWorkoutTimes || !availableEquipment) {
+    if (!sex || !age || !height || !weight || !fitness_level || !injuries || !preferred_workout_times || !available_equipment) {
       Alert.alert('Error', 'Please fill out all fields.');
       return;
     }
 
     const heightNum = parseFloat(height);
     const weightNum = parseFloat(weight);
-
-    const updatedUser = {
-      ...user,
-      sex,
-      age,
-      height: heightNum,
-      weight: weightNum,
-      fitnessLevel,
-      injuries,
-      preferredWorkoutTimes,
-      availableEquipment,
-      has_plan: true,
-      plan_week: 1,
-    };
-
-    setUser(updatedUser);
 
     try {
       const response = await userInfo(
@@ -47,13 +37,30 @@ const UserInfoForm = ({ navigation }) => {
         age,
         heightNum,
         weightNum,
-        fitnessLevel,
+        fitness_level,
         injuries,
-        preferredWorkoutTimes,
-        availableEquipment,
+        preferred_workout_times,
+        available_equipment,
         true,
         1,
       );
+
+      const updatedUser = {
+        ...user,
+        sex,
+        age,
+        height: heightNum,
+        weight: weightNum,
+        fitness_level,
+        injuries,
+        preferred_workout_times,
+        available_equipment,
+        has_plan: true,
+        plan_week: 1,
+      };
+  
+      setUser(updatedUser);
+
       navigation.navigate('Home');
       Alert.alert('Your personalized plan has been generated!');
     } catch (error) {
@@ -106,7 +113,7 @@ const UserInfoForm = ({ navigation }) => {
       <Text style={styles.boldText}>Fitness Level</Text>
       <View style={styles.pickerContainer}>
         <Picker
-          selectedValue={fitnessLevel}
+          selectedValue={fitness_level}
           onValueChange={(itemValue) => setFitnessLevel(itemValue)}
         >
           <Picker.Item label="-" value="" />
@@ -115,6 +122,11 @@ const UserInfoForm = ({ navigation }) => {
           <Picker.Item label="Advanced" value="Advanced" />
         </Picker>
       </View>
+      {fitness_level && (
+        <Text style={styles.fitnessDescription}>
+          {fitnessLevelDescriptions[fitness_level]}
+        </Text>
+      )}
 
       <Text style={styles.boldText}>Injury</Text>
       <View style={styles.pickerContainer}>
@@ -132,20 +144,20 @@ const UserInfoForm = ({ navigation }) => {
       <Text style={styles.boldText}>Preferred Workout Times per Week</Text>
       <View style={styles.pickerContainer}>
         <Picker
-          selectedValue={preferredWorkoutTimes}
+          selectedValue={preferred_workout_times}
           onValueChange={(itemValue) => setPreferredWorkoutTimes(itemValue)}
         >
           <Picker.Item label="-" value="" />
-          <Picker.Item label="2 times a week" value="2" />
           <Picker.Item label="3 times a week" value="3" />
           <Picker.Item label="4 times a week" value="4" />
+          <Picker.Item label="5 times a week" value="5" />
         </Picker>
       </View>
 
       <Text style={styles.boldText}>Available Equipment</Text>
       <View style={styles.pickerContainer}>
         <Picker
-          selectedValue={availableEquipment}
+          selectedValue={available_equipment}
           onValueChange={(itemValue) => setAvailableEquipment(itemValue)}
         >
           <Picker.Item label="-" value="" />
@@ -187,6 +199,11 @@ const styles = StyleSheet.create({
     marginBottom: 16,
     paddingHorizontal: 8,
     width: '100%',
+  },
+  fitnessDescription: {
+    marginBottom: 16,
+    fontSize: 14,
+    color: '#555',
   },
 });
 

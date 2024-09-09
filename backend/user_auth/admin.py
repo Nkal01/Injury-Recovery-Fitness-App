@@ -7,11 +7,11 @@ class CustomUserAdmin(UserAdmin):
     model = CustomUser
     fieldsets = (
         (None, {'fields': ('username', 'password')}),
-        ('Personal info', {'fields': ('email', 'sex', 'age', 'height', 'weight', 'bmi', 'fitness_level', 'injuries', 'preferred_workout_times', 'available_equipment', 'has_plan', 'plan_week')}),
+        ('Personal info', {'fields': ('email', 'sex', 'age', 'height', 'weight', 'bmi', 'fitness_level', 'injuries', 'preferred_workout_times', 'available_equipment', 'has_plan', 'plan_week', 'completed_days')}),
         ('Permissions', {'fields': ('is_active', 'is_staff', 'is_superuser', 'groups', 'user_permissions')}),
         ('Important dates', {'fields': ('last_login', 'date_joined')}),
     )
-    list_display = ['username', 'email', 'sex', 'age', 'height', 'weight', 'bmi', 'fitness_level', 'injuries', 'preferred_workout_times', 'available_equipment', 'has_plan', 'plan_week']
+    list_display = ['username', 'email', 'sex', 'age', 'height', 'weight', 'bmi', 'fitness_level', 'injuries', 'preferred_workout_times', 'available_equipment', 'has_plan', 'plan_week', 'completed_days']
 
 class ExerciseAdmin(admin.ModelAdmin):
     list_display = ['name', 'difficulty', 'age', 'injury', 'muscle_group', 'type', 'equipment', 'description', 'bmi', 'week1', 'week2', 'week3']

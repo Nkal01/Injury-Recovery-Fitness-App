@@ -10,8 +10,12 @@ export const login = (username, password) => {
     return axios.post(`${API_URL}/login/`, { username, password });
 };
 
-export const userInfo = (username, sex, age, height, weight, fitnessLevel, injuries, preferredWorkoutTimes, availableEquipment, hasPlan, planWeek) => {
-    return axios.post(`${API_URL}/userInfo/`, { username, sex, age, height, weight, fitnessLevel, injuries, preferredWorkoutTimes, availableEquipment, hasPlan, planWeek });
+export const userInfo = (username, sex, age, height, weight, fitness_level, injuries, preferred_workout_times, available_equipment, hasPlan, planWeek) => {
+    return axios.post(`${API_URL}/userInfo/`, { username, sex, age, height, weight, fitness_level, injuries, preferred_workout_times, available_equipment, hasPlan, planWeek });
+};
+
+export const updatePlan = (username, age, injuries, available_equipment, height, weight, fitness_level, preferred_workout_times, planWeek, completedDays) => {
+    return axios.put(`${API_URL}/updatePlan/`, { username, age, injuries, available_equipment, height, weight, fitness_level, preferred_workout_times, planWeek, completedDays });
 };
 
 export const getExercisesByType = (type) => {
@@ -32,14 +36,27 @@ export const getExercisesByName = (name) => {
     });
 };
 
+export const getAllExercises = () => {
+    return axios.get(`${API_URL}/exercises/`);
+};
+
 export const getWorkoutPlan = async (username) => {
     try {
         const response = await fetch(`${API_URL}/workoutplan/${username}/`);
         const data = await response.json();
-        console.log('API Response:', data);  // Check the response from the API
         return data;
     } catch (error) {
         console.error('Error fetching workout plan:', error);
+        throw error;
+    }
+};
+
+export const updateCompletedDays = async (username, completedDays) => {
+    try {
+        const response = await axios.post(`${API_URL}/workoutplan/${username}/`, { completed_days: completedDays });
+        return response.data;
+    } catch (error) {
+        console.error('Error updating completed days:', error);
         throw error;
     }
 };

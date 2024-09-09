@@ -3,6 +3,12 @@ import { View, Text, StyleSheet, ActivityIndicator, FlatList, TouchableOpacity, 
 import { getExercisesByName } from '../../services/api';
 import { useUser } from '../../services/user-context';
 
+const skillLevelMap = {
+    'Beginner': 1,
+    'Intermediate': 2,
+    'Advanced': 3,
+};
+
 const PlanDayExercises = ({ route }) => {
     const { exercises } = route.params; // Array of exercise names for the day
     const [exerciseDetails, setExerciseDetails] = useState([]);
@@ -14,11 +20,9 @@ const PlanDayExercises = ({ route }) => {
     useEffect(() => {
         const fetchExercises = async () => {
             try {
-                // Fetch all exercises from the API
                 const response = await getExercisesByName('');
                 const allExercises = response.data;
 
-                // Filter exercises that match the names in the exercises array
                 const filteredExercises = allExercises.filter(exercise => exercises.includes(exercise.name));
 
                 setExerciseDetails(filteredExercises);
@@ -39,23 +43,29 @@ const PlanDayExercises = ({ route }) => {
     if (error) {
         return <Text>Error fetching exercises: {error.message}</Text>;
     }
-    
 
     const renderItem = ({ item }) => {
         let repetition;
-        let user_week = user.plan_week;
-    
-        // Determine the repetition based on the user's current week
-        if (user_week == 1) {
-            repetition = item.week1;
-        } else if (user_week == 2) {
-            repetition = item.week2;
-        } else if (user_week == 3) {
+        const userSkillLevel = skillLevelMap[user.fitness_level]; // Map user's skill level to a number
+        const exerciseDifficultyLevel = skillLevelMap[item.difficulty]; // Map exercise difficulty to a number
+        const userWeek = user.plan_week;
+
+        // If user skill level is higher than exercise difficulty, use week3 repetitions
+        if (userSkillLevel > exerciseDifficultyLevel) {
             repetition = item.week3;
+        } else {
+            // Otherwise, use the appropriate repetition based on the user's plan week
+            if (userWeek === 1) {
+                repetition = item.week1;
+            } else if (userWeek === 2) {
+                repetition = item.week2;
+            } else if (userWeek === 3) {
+                repetition = item.week3;
+            }
         }
-    
+
         return (
-            <TouchableOpacity style={styles.exerciseCard}>
+            <View style={styles.exerciseCard}>
                 {item.image ? (
                     <Image
                         source={{ uri: item.image }}
@@ -73,7 +83,7 @@ const PlanDayExercises = ({ route }) => {
                         ? `Equipment needed: ${item.equipment}`
                         : 'Equipment needed: None'}
                 </Text>
-            </TouchableOpacity>
+            </View>
         );
     };
 

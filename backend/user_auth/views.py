@@ -9,6 +9,8 @@ from .models import CustomUser, Exercise, WorkoutPlan
 from .serializers import CustomUserSerializer, ExerciseSerializer
 from rest_framework.authtoken.models import Token
 from .workout_plan import generate_plan
+from django.core.validators import validate_email
+from django.core.exceptions import ValidationError
 import json
 
 class RegisterView(APIView):
@@ -22,17 +24,29 @@ class RegisterView(APIView):
 
 class LoginView(APIView):
     def post(self, request):
-        username = request.data.get('username')
+        identifier = request.data.get('username')
         password = request.data.get('password')
 
+        try:
+            validate_email(identifier)
+            user = CustomUser.objects.filter(email=identifier).first()
+            if user:
+                username = user.username
+            else:
+                return Response({'error': 'Invalid Credentials'}, status=status.HTTP_400_BAD_REQUEST)
+        except ValidationError:
+            username = identifier
+
         user = authenticate(username=username, password=password)
+        
         if user:
-            token, created = Token.objects.get_or_create(user = user)
+            token, created = Token.objects.get_or_create(user=user)
             user_data = CustomUserSerializer(user).data
             return Response({
                 "token": token.key,
                 "user": user_data
             })
+        
         return Response({'error': 'Invalid Credentials'}, status=status.HTTP_400_BAD_REQUEST)
     
 class UserInfoView(APIView):
@@ -42,10 +56,10 @@ class UserInfoView(APIView):
         age = request.data.get('age')
         height = request.data.get('height')
         weight = request.data.get('weight')
-        fitness_level = request.data.get('fitnessLevel')
+        fitness_level = request.data.get('fitness_level')
         injuries = request.data.get('injuries')
-        preferred_workout_times = request.data.get('preferredWorkoutTimes')
-        available_equipment = request.data.get('availableEquipment')
+        preferred_workout_times = request.data.get('preferred_workout_times')
+        available_equipment = request.data.get('available_equipment')
         has_plan = request.data.get('hasPlan')
         plan_week = request.data.get('planWeek')
 
@@ -109,7 +123,72 @@ class WorkoutPlanView(APIView):
         workout_plan = WorkoutPlan.objects.filter(user=user).first()
         if workout_plan:
             plan_data = workout_plan.plan_data
-            return JsonResponse({'plan': plan_data})
+            completed_days = user.completed_days
+            return JsonResponse({
+                'plan': plan_data,
+                'completed_days': completed_days
+            })
         else:
             return JsonResponse({'error': 'Workout plan not found'}, status=404)
+
+    def post(self, request, username):
+
+        user = get_object_or_404(CustomUser, username=username)
+        completed_days = request.data.get('completed_days')
+
+        if len(completed_days) != len(user.completed_days):
+            return Response({'error': 'Mismatch between provided and stored number of workout days.'}, status=status.HTTP_400_BAD_REQUEST)
+
+        # Update the user's completed days
+        user.completed_days = completed_days
+        user.save()
+
+        return JsonResponse({
+            'message': 'Completed days updated successfully.',
+            'completed_days': user.completed_days
+        }, status=status.HTTP_200_OK)
     
+class UpdatePlanView(APIView):
+    def put(self, request):
+        username = request.data.get('username')
+        age = request.data.get('age')
+        height = request.data.get('height')
+        weight = request.data.get('weight')
+        fitness_level = request.data.get('fitness_level')
+        injuries = request.data.get('injuries')
+        preferred_workout_times = request.data.get('preferred_workout_times')
+        available_equipment = request.data.get('available_equipment')
+        plan_week = request.data.get('planWeek')
+        completed_days = request.data.get('completedDays')
+
+        try:
+            user = CustomUser.objects.get(username=username)
+        except CustomUser.DoesNotExist:
+            return Response({'error': 'User not found'}, status=status.HTTP_404_NOT_FOUND)
+
+        # Delete the user's existing plan(s)
+        WorkoutPlan.objects.filter(user=user).delete()
+
+        # Update the user's profile details
+        user.fitness_level = fitness_level
+        user.preferred_workout_times = preferred_workout_times
+        user.plan_week = plan_week
+        user.completed_days = completed_days
+        user.save()
+
+        # Prepare user data for generating the new plan
+        user_data = {
+            'username': username,
+            'fitnessLevel': fitness_level,
+            'age': age,
+            'injuries': injuries,
+            'availableEquipment': available_equipment,
+            'height': float(height),
+            'weight': float(weight),
+            'preferredWorkoutTimes': preferred_workout_times,
+        }
+
+        print(user_data)
+        plan = generate_plan(user_data)
+        return Response({"message": "User profile updated and plan generated successfully", "plan": plan}, status=status.HTTP_200_OK)
+

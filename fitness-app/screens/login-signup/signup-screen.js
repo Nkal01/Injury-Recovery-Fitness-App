@@ -47,7 +47,7 @@ const SignUpScreen = ({ navigation }) => {
 
     try {
       const response = await signup(username, password, email);
-      Alert.alert('Sign Up Success', `Welcome, ${username}!`);
+      Alert.alert('Sign Up Success', `Please log in`);
       navigation.navigate('Login');
     } catch (error) {
       Alert.alert('Sign Up Failed', 'Failed to create account');

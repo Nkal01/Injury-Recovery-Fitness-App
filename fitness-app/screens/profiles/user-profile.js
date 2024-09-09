@@ -1,5 +1,5 @@
-import React, { useContext, useEffect, useState } from 'react';
-import { View, Text, StyleSheet, Image  } from 'react-native';
+import React from 'react';
+import { View, Text, StyleSheet, ScrollView } from 'react-native';
 import { useUser } from '../../services/user-context';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 
@@ -7,100 +7,116 @@ const UserProfileScreen = () => {
   const { user } = useUser();
 
   return (
-    <View style={styles.container}>
-      
+    <ScrollView contentContainerStyle={styles.container}>
       <View style={styles.imageContainer}>
-        <MaterialCommunityIcons name="account-circle" size={96} />
+        <MaterialCommunityIcons name="account-circle" size={96} color="#3c3e56" />
         <Text style={styles.username}>{user.username}</Text>
       </View>
       
-      {user.email ? (
-        <>
-          <Text style={styles.label}>Email:</Text>
-          <Text style={styles.value}>{user.email}</Text>
-        </>
-      ) : null}
-      
-      {user.sex ? (
-        <>
-          <Text style={styles.label}>Sex:</Text>
-          <Text style={styles.value}>{user.sex}</Text>
-        </>
-      ) : null}
-      
-      {user.height ? (
-        <>
-          <Text style={styles.label}>Height:</Text>
-          <Text style={styles.value}>{user.height} cm</Text>
-        </>
-      ) : null}
-      
-      {user.weight ? (
-        <>
-          <Text style={styles.label}>Weight:</Text>
-          <Text style={styles.value}>{user.weight} kg</Text>
-        </>
-      ) : null}
-      
-      {user.bmi ? (
-        <>
-          <Text style={styles.label}>BMI:</Text>
-          <Text style={styles.value}>{user.bmi}</Text>
-        </>
-      ) : null}
-      
-      {user.fitness_level ? (
-        <>
-          <Text style={styles.label}>Fitness Level:</Text>
-          <Text style={styles.value}>{user.fitness_level}</Text>
-        </>
-      ) : null}
-      
-      {user.injuries ? (
-        <>
-          <Text style={styles.label}>Injuries:</Text>
-          <Text style={styles.value}>{user.injuries}</Text>
-        </>
-      ) : null}
-      
-      {user.preferred_workout_time ? (
-        <>
-          <Text style={styles.label}>Preferred Workout Time:</Text>
-          <Text style={styles.value}>{user.preferred_workout_time}</Text>
-        </>
-      ) : null}
-    </View>
+      <View style={styles.infoContainer}>
+        {user.email && (
+          <View style={styles.infoItem}>
+            <Text style={styles.label}>Email:</Text>
+            <Text style={styles.value}>{user.email}</Text>
+          </View>
+        )}
+        
+        {user.sex && (
+          <View style={styles.infoItem}>
+            <Text style={styles.label}>Sex:</Text>
+            <Text style={styles.value}>{user.sex}</Text>
+          </View>
+        )}
+        
+        {user.height && (
+          <View style={styles.infoItem}>
+            <Text style={styles.label}>Height:</Text>
+            <Text style={styles.value}>{user.height} cm</Text>
+          </View>
+        )}
+        
+        {user.weight && (
+          <View style={styles.infoItem}>
+            <Text style={styles.label}>Weight:</Text>
+            <Text style={styles.value}>{user.weight} kg</Text>
+          </View>
+        )}
+        
+        {user.bmi && (
+          <View style={styles.infoItem}>
+            <Text style={styles.label}>BMI:</Text>
+            <Text style={styles.value}>{user.bmi}</Text>
+          </View>
+        )}
+        
+        {user.fitness_level && (
+          <View style={styles.infoItem}>
+            <Text style={styles.label}>Fitness Level:</Text>
+            <Text style={styles.value}>{user.fitness_level}</Text>
+          </View>
+        )}
+        
+        {user.injuries && (
+          <View style={styles.infoItem}>
+            <Text style={styles.label}>Injuries:</Text>
+            <Text style={styles.value}>{user.injuries}</Text>
+          </View>
+        )}
+        
+        {user.preferred_workout_time && (
+          <View style={styles.infoItem}>
+            <Text style={styles.label}>Preferred Workout Time:</Text>
+            <Text style={styles.value}>{user.preferred_workout_time}</Text>
+          </View>
+        )}
+      </View>
+    </ScrollView>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
+    flexGrow: 1,
     padding: 20,
-    backgroundColor: '#fff',
+    backgroundColor: '#f5f5f5',
+    alignItems: 'center',
   },
   imageContainer: {
     alignItems: 'center',
     marginBottom: 20,
   },
-  profileImage: {
-    width: 100,
-    height: 100,
-    borderRadius: 50,
-  },
   username: {
-    fontSize: 20,
+    fontSize: 24,
     fontWeight: 'bold',
+    color: '#3c3e56',
     marginTop: 10,
+  },
+  infoContainer: {
+    width: '100%',
+    alignItems: 'center',
+  },
+  infoItem: {
+    width: '100%',
+    backgroundColor: '#fff',
+    padding: 15,
+    borderRadius: 8,
+    marginBottom: 10,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    borderWidth: 1,
+    borderColor: '#ddd',
   },
   label: {
     fontSize: 16,
     fontWeight: 'bold',
-    marginTop: 10,
+    color: '#333',
   },
   value: {
     fontSize: 16,
-    marginBottom: 10,
+    color: '#666',
+    marginTop: 5,
   },
 });
 

@@ -22,9 +22,9 @@ class CustomUser(AbstractUser):
     ]
 
     WORKOUT_TIMES_CHOICES = [
-        ('2', '2 times a week'),
         ('3', '3 times a week'),
         ('4', '4 times a week'),
+        ('5', '5 times a week'),
     ]
 
     EQUIPMENT_CHOICES = [
@@ -44,6 +44,7 @@ class CustomUser(AbstractUser):
     available_equipment = models.CharField(max_length=20, choices=EQUIPMENT_CHOICES, null=True, blank=True)
     has_plan = models.BooleanField(null=True, blank=True)
     plan_week = models.IntegerField(null=True, blank=True)
+    completed_days = models.JSONField(default=list, blank=True)
 
     groups = models.ManyToManyField(
         'auth.Group',
@@ -66,6 +67,12 @@ class CustomUser(AbstractUser):
             self.bmi = round(self.weight / ((self.height / 100) ** 2), 1)
         else:
             self.bmi = None
+
+        if self.preferred_workout_times:
+            days = int(self.preferred_workout_times)
+            if len(self.completed_days) != days:
+                self.completed_days = [0] * days
+
         super(CustomUser, self).save(*args, **kwargs)
 
     def __str__(self):

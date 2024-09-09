@@ -14,7 +14,7 @@ const LoginScreen = ({ navigation }) => {
         const response = await login(username, password);
         const userData = response.data.user;
 
-        Alert.alert('Login Success', 'Welcome, ' + username + '!');
+        Alert.alert('Login Success', 'Welcome, ' + userData.username + '!');
         console.log(userData);
         setUser(userData);
 
@@ -35,7 +35,7 @@ const LoginScreen = ({ navigation }) => {
       <Text style={styles.title}>Log In</Text>
       <TextInput
         style={styles.input}
-        placeholder="Username"
+        placeholder="Username or Email"
         value={username}
         onChangeText={setUsername}
       />

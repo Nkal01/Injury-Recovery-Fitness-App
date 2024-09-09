@@ -29,16 +29,6 @@ const HomeScreen = ({ navigation }) => {
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Choose Exercise Type</Text>
-      <Animated.View style={{ transform: [{ scale: scaleFlex }] }}>
-        <TouchableOpacity
-          style={styles.button}
-          onPressIn={() => handlePressIn(scaleFlex)}
-          onPressOut={() => handlePressOut(scaleFlex)}
-          onPress={() => navigateToMuscleGroup('Flexibility')}
-        >
-          <Text style={styles.buttonText}>Flexibility Exercises</Text>
-        </TouchableOpacity>
-      </Animated.View>
       <Animated.View style={{ transform: [{ scale: scaleStrength }] }}>
         <TouchableOpacity
           style={styles.button}
@@ -46,7 +36,17 @@ const HomeScreen = ({ navigation }) => {
           onPressOut={() => handlePressOut(scaleStrength)}
           onPress={() => navigateToMuscleGroup('Strength')}
         >
-          <Text style={styles.buttonText}>Strength Exercises</Text>
+          <Text style={styles.buttonText}>Strength</Text>
+        </TouchableOpacity>
+      </Animated.View>
+      <Animated.View style={{ transform: [{ scale: scaleFlex }] }}>
+        <TouchableOpacity
+          style={styles.button}
+          onPressIn={() => handlePressIn(scaleFlex)}
+          onPressOut={() => handlePressOut(scaleFlex)}
+          onPress={() => navigateToMuscleGroup('Flexibility')}
+        >
+          <Text style={styles.buttonText}>Flexibility</Text>
         </TouchableOpacity>
       </Animated.View>
     </View>

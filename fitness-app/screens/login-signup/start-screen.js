@@ -6,9 +6,6 @@ import { Ionicons } from '@expo/vector-icons';
 const StartScreen = ({ navigation }) => {
     return (
       <View style={styles.container}>
-        <TouchableOpacity style={styles.closeButton} onPress={() => navigation.navigate('Drawer')}>
-          <Ionicons name="close-outline" size={32} color="#ab92b3" />
-        </TouchableOpacity>
         <Image source={require('../../assets/images/logos/logo2.png')} style={styles.logo} />
         <Text style={styles.title}>Welcome!</Text>
         <TouchableOpacity style={styles.button} onPress={() => navigation.navigate('Login')}>
@@ -48,15 +45,10 @@ const StartScreen = ({ navigation }) => {
       color: '#FFFFFF',
       fontSize: 26,
     },
-    closeButton: {
-      position: 'absolute',
-      top: 40,
-      left: 20,
-    },
     logo: {
-        width: 64, // Adjust the width as needed
-        height: 64, // Adjust the height as needed
-        marginBottom: 20, // Add some space below the logo
+        width: 64,
+        height: 64,
+        marginBottom: 20,
     },
     signupText: {
         color: '#ab92b3',
