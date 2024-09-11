@@ -1,5 +1,5 @@
 import React, { useState, useContext } from 'react';
-import { View, Text, TextInput, Button, StyleSheet, ScrollView, Alert } from 'react-native';
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, ScrollView, Alert } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
 import { UserContext } from '../services/user-context';
 import { userInfo } from '../services/api';
@@ -71,19 +71,21 @@ const UserInfoForm = ({ navigation }) => {
 
   return (
     <ScrollView contentContainerStyle={styles.container}>
-      <Text style={styles.boldText}>Sex</Text>
+      <Text style={styles.header}>User Info Form</Text>
+
+      <Text style={styles.label}>Sex</Text>
       <View style={styles.pickerContainer}>
         <Picker
           selectedValue={sex}
           onValueChange={(itemValue) => setSex(itemValue)}
         >
-          <Picker.Item label="-" value="" />
+          <Picker.Item label="Select sex" value="" />
           <Picker.Item label="Male" value="Male" />
           <Picker.Item label="Female" value="Female" />
         </Picker>
       </View>
 
-      <Text style={styles.boldText}>Age</Text>
+      <Text style={styles.label}>Age</Text>
       <TextInput
         style={styles.input}
         keyboardType="numeric"
@@ -92,7 +94,7 @@ const UserInfoForm = ({ navigation }) => {
         placeholder="Enter age"
       />
 
-      <Text style={styles.boldText}>Height (cm)</Text>
+      <Text style={styles.label}>Height (cm)</Text>
       <TextInput
         style={styles.input}
         keyboardType="numeric"
@@ -101,7 +103,7 @@ const UserInfoForm = ({ navigation }) => {
         placeholder="Enter height"
       />
 
-      <Text style={styles.boldText}>Weight (kg)</Text>
+      <Text style={styles.label}>Weight (kg)</Text>
       <TextInput
         style={styles.input}
         keyboardType="numeric"
@@ -110,13 +112,13 @@ const UserInfoForm = ({ navigation }) => {
         placeholder="Enter weight"
       />
 
-      <Text style={styles.boldText}>Fitness Level</Text>
+      <Text style={styles.label}>Fitness Level</Text>
       <View style={styles.pickerContainer}>
         <Picker
           selectedValue={fitness_level}
           onValueChange={(itemValue) => setFitnessLevel(itemValue)}
         >
-          <Picker.Item label="-" value="" />
+          <Picker.Item label="Select fitness level" value="" />
           <Picker.Item label="Beginner" value="Beginner" />
           <Picker.Item label="Intermediate" value="Intermediate" />
           <Picker.Item label="Advanced" value="Advanced" />
@@ -128,46 +130,48 @@ const UserInfoForm = ({ navigation }) => {
         </Text>
       )}
 
-      <Text style={styles.boldText}>Injury</Text>
+      <Text style={styles.label}>Injury</Text>
       <View style={styles.pickerContainer}>
         <Picker
           selectedValue={injuries}
           onValueChange={(itemValue) => setInjuries(itemValue)}
         >
-          <Picker.Item label="-" value="" />
+          <Picker.Item label="Select injury" value="" />
           <Picker.Item label="Achilles" value="Torn Achilles" />
           <Picker.Item label="ACL" value="Torn ACL" />
           <Picker.Item label="Meniscus" value="Torn Meniscus" />
         </Picker>
       </View>
 
-      <Text style={styles.boldText}>Preferred Workout Times per Week</Text>
+      <Text style={styles.label}>Workouts per week</Text>
       <View style={styles.pickerContainer}>
         <Picker
           selectedValue={preferred_workout_times}
           onValueChange={(itemValue) => setPreferredWorkoutTimes(itemValue)}
         >
-          <Picker.Item label="-" value="" />
+          <Picker.Item label="Select workouts" value="" />
           <Picker.Item label="3 times a week" value="3" />
           <Picker.Item label="4 times a week" value="4" />
           <Picker.Item label="5 times a week" value="5" />
         </Picker>
       </View>
 
-      <Text style={styles.boldText}>Available Equipment</Text>
+      <Text style={styles.label}>Available Equipment</Text>
       <View style={styles.pickerContainer}>
         <Picker
           selectedValue={available_equipment}
           onValueChange={(itemValue) => setAvailableEquipment(itemValue)}
         >
-          <Picker.Item label="-" value="" />
+          <Picker.Item label="Select equipment" value="" />
           <Picker.Item label="None" value="None" />
           <Picker.Item label="Resistance bands" value="Resistance Band" />
           <Picker.Item label="Gym subscription" value="Gym" />
         </Picker>
       </View>
 
-      <Button title="Submit" onPress={handleSubmit} />
+      <TouchableOpacity style={styles.submitButton} onPress={handleSubmit}>
+        <Text style={styles.submitButtonText}>Submit</Text>
+      </TouchableOpacity>
     </ScrollView>
   );
 };
@@ -175,35 +179,56 @@ const UserInfoForm = ({ navigation }) => {
 const styles = StyleSheet.create({
   container: {
     flexGrow: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    padding: 36,
+    padding: 20,
+    backgroundColor: '#f9f9f9',
   },
-  boldText: {
+  header: {
+    fontSize: 28,
     fontWeight: 'bold',
+    textAlign: 'center',
+    marginBottom: 30,
+    color: '#333',
+  },
+  label: {
+    fontSize: 16,
     marginBottom: 8,
+    fontWeight: '600',
+    color: '#555',
+  },
+  input: {
+    height: 44,
+    borderColor: '#ccc',
+    borderWidth: 1,
+    borderRadius: 8,
+    paddingHorizontal: 10,
+    marginBottom: 16,
+    backgroundColor: '#fff',
+    fontSize: 16,
   },
   pickerContainer: {
     borderWidth: 1,
-    borderColor: '#000',
-    borderRadius: 5,
-    overflow: 'hidden',
-    marginBottom: 16,
-    width: '100%',
-  },
-  input: {
-    height: 40,
-    borderColor: '#000',
-    borderWidth: 1,
-    borderRadius: 5,
-    marginBottom: 16,
-    paddingHorizontal: 8,
-    width: '100%',
+    borderColor: '#ccc',
+    borderRadius: 8,
+    marginBottom: 6,
+    backgroundColor: '#fff',
   },
   fitnessDescription: {
     marginBottom: 16,
     fontSize: 14,
-    color: '#555',
+    color: '#777',
+    fontStyle: 'italic',
+  },
+  submitButton: {
+    backgroundColor: '#ab92b3',
+    paddingVertical: 15,
+    borderRadius: 8,
+    marginTop: 20,
+    alignItems: 'center',
+  },
+  submitButtonText: {
+    color: '#fff',
+    fontSize: 18,
+    fontWeight: 'bold',
   },
 });
 

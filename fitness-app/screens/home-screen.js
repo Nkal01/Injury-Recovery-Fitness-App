@@ -11,9 +11,9 @@ const HomeScreen = ({ navigation }) => {
     const [workoutPlan, setWorkoutPlan] = useState({});
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
-    const [checkedDays, setCheckedDays] = useState([]); // Initialize as an array
-    const [allChecked, setAllChecked] = useState(false); // State to track if all are checked
-    const [modalVisible, setModalVisible] = useState(false); // Modal visibility state
+    const [checkedDays, setCheckedDays] = useState([]);
+    const [allChecked, setAllChecked] = useState(false);
+    const [modalVisible, setModalVisible] = useState(false);
     const [feedback, setFeedback] = useState({
         challengingButDoable: false,
         struggled: false,
@@ -22,7 +22,7 @@ const HomeScreen = ({ navigation }) => {
     });
     const [workoutsPerWeek, setWorkoutsPerWeek] = useState('3');
 
-    // Function to fetch workout plan based on username
+
     const fetchWorkoutPlan = async (username) => {
         try {
             const response = await getWorkoutPlan(username);
@@ -32,7 +32,7 @@ const HomeScreen = ({ navigation }) => {
                 if (response.completed_days) {
                     setCheckedDays(response.completed_days);
                     console.log('Completed Days:', response.completed_days);
-                    // Check if all days are completed
+
                     const isAllChecked = response.completed_days.every(day => day === 1);
                     setAllChecked(isAllChecked);
                 }
@@ -50,21 +50,18 @@ const HomeScreen = ({ navigation }) => {
         }
     };
 
-    // Fetch workout plan when component mounts or username changes
     useEffect(() => {
         if (user && user.username) {
             fetchWorkoutPlan(user.username);
         }
     }, [user]);
 
-    // Toggle checkbox status for a day
     const toggleChecked = async (dayIndex) => {
         const updatedCheckedDays = [...checkedDays];
         updatedCheckedDays[dayIndex] = updatedCheckedDays[dayIndex] === 1 ? 0 : 1;
 
         setCheckedDays(updatedCheckedDays);
 
-        // Check if all days are completed
         const isAllChecked = updatedCheckedDays.every(day => day === 1);
         setAllChecked(isAllChecked);
 
@@ -76,7 +73,6 @@ const HomeScreen = ({ navigation }) => {
         }
     };
 
-    // Handle feedback checkbox change
     const handleFeedbackChange = (feedbackType) => {
         setFeedback({
             challengingButDoable: feedbackType === 'challengingButDoable',
@@ -86,7 +82,6 @@ const HomeScreen = ({ navigation }) => {
         });
     };
 
-    // Render different UI states based on data and loading status
     if (loading) {
         return <ActivityIndicator size="large" color="#0000ff" />;
     }
@@ -149,7 +144,6 @@ const HomeScreen = ({ navigation }) => {
 
         completedDays.fill(0)
     
-        console.log("****" + plan_week)
         const updatedUser = {
             ...user,
             sex,

@@ -7,6 +7,7 @@ const ExercisesScreen = () => {
   const { exerciseType, muscleGroup } = useContext(ExerciseContext);
   const [exercises, setExercises] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [selectedExercise, setSelectedExercise] = useState(null);
 
   useEffect(() => {
     const fetchExercises = async () => {
@@ -23,24 +24,45 @@ const ExercisesScreen = () => {
     fetchExercises();
   }, [exerciseType, muscleGroup]);
 
-  const renderItem = ({ item }) => (
-    <TouchableOpacity style={styles.exerciseCard}>
-      {item.image ? (
-        <Image
-          source={{ uri: item.image }}
-          style={styles.exerciseImage}
-          resizeMode="cover"
-        />
-      ) : (
-        <View style={styles.placeholderImage} />
-      )}
-      <Text style={styles.exerciseName}>{item.name}</Text>
-      <Text style={styles.exerciseDescription}>{item.description}</Text>
-      <Text style={styles.exerciseDetails}>
-        {item.equipment && item.equipment !== "nan" ? `Equipment needed: ${item.equipment}` : 'Equipment needed: None'}
-      </Text>
-    </TouchableOpacity>
-  );
+  const renderItem = ({ item }) => {
+    if (selectedExercise?.id !== item.id) {
+      return (
+        <TouchableOpacity
+          style={styles.exerciseBox}
+          onPress={() => setSelectedExercise(item)}
+        >
+          <Text style={styles.exerciseName}>{item.name}</Text>
+          <Text style={styles.exerciseDetails}>Type: {item.type}</Text>
+          <Text style={styles.exerciseDetails}>Muscle Group: {item.muscle_group}</Text>
+          <Text style={styles.exerciseDetails}>
+            {item.equipment && item.equipment !== "nan" ? `Equipment: ${item.equipment}` : 'Equipment: None'}
+          </Text>
+        </TouchableOpacity>
+      );
+    }
+
+    return (
+      <TouchableOpacity
+        style={styles.exerciseCard}
+        onPress={() => setSelectedExercise(null)}
+      >
+        {item.image ? (
+          <Image
+            source={{ uri: item.image }}
+            style={styles.exerciseImage}
+            resizeMode="cover"
+          />
+        ) : (
+          <View style={styles.placeholderImage} />
+        )}
+        <Text style={styles.exerciseName}>{item.name}</Text>
+        <Text style={styles.exerciseDescription}>{item.description}</Text>
+        <Text style={styles.exerciseDetails}>
+          {item.equipment && item.equipment !== "nan" ? `Equipment needed: ${item.equipment}` : 'Equipment needed: None'}
+        </Text>
+      </TouchableOpacity>
+    );
+  };
 
   const muscleGroupText = Array.isArray(muscleGroup)
     ? muscleGroup.length === 2
@@ -51,7 +73,7 @@ const ExercisesScreen = () => {
   return (
     <View style={styles.container}>
       <Text style={styles.title}>
-        {exerciseType} Exercises for {muscleGroupText}
+        {muscleGroupText.trim() ? `${exerciseType} Exercises for ${muscleGroupText}` : 'All exercises'}
       </Text>
       {loading ? (
         <Text>Loading...</Text>
@@ -84,6 +106,13 @@ const styles = StyleSheet.create({
   list: {
     paddingBottom: 20,
   },
+  exerciseBox: {
+    backgroundColor: 'white',
+    borderRadius: 10,
+    padding: 15,
+    marginBottom: 10,
+    elevation: 2,
+  },
   exerciseCard: {
     backgroundColor: 'white',
     borderRadius: 10,
@@ -105,16 +134,16 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   exerciseName: {
-    fontSize: 18,
+    fontSize: 20,
     fontWeight: 'bold',
-    marginBottom: 10,
+    marginBottom: 5,
   },
   exerciseDescription: {
     fontSize: 14,
     marginBottom: 10,
   },
   exerciseDetails: {
-    fontSize: 12,
+    fontSize: 16,
     color: 'gray',
   },
 });

@@ -1,5 +1,5 @@
 import React, { useContext } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, FlatList, Dimensions } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, FlatList } from 'react-native';
 import { ExerciseContext } from '../../services/exercise-context';
 
 const muscleGroups = [
@@ -8,16 +8,19 @@ const muscleGroups = [
     'Hip Flexors/Abductors',
     'Glutes',
     'Calves',
+    'Any'
   ];
 
-const MuscleGroupScreen = ({ navigation }) => {
+  const MuscleGroupScreen = ({ navigation }) => {
     const { setMuscleGroup } = useContext(ExerciseContext);
 
     const navigateToExercises = (group) => {
         if (group === 'Hip Flexors/Abductors') {
             setMuscleGroup(['Hip Flexors', 'Hip Abductors'].join(','));
+        } else if (group === 'Any') {
+            setMuscleGroup('');
         } else {
-            setMuscleGroup(group); // Set as a single string
+            setMuscleGroup(group);
         }
         navigation.navigate('Exercises');
     };
@@ -35,15 +38,11 @@ const MuscleGroupScreen = ({ navigation }) => {
             data={muscleGroups}
             keyExtractor={(item) => item}
             renderItem={renderItem}
-            numColumns={2}
-            columnWrapperStyle={styles.row}
+            numColumns={1}
         />
         </View>
     );
 };
-
-const { width } = Dimensions.get('window');
-const buttonWidth = (width - 60) / 2;
 
 const styles = StyleSheet.create({
     container: {
@@ -51,7 +50,6 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center',
         padding: 20,
-        backgroundColor: '#f5f5f5',
     },
     title: {
         fontSize: 24,
@@ -59,23 +57,20 @@ const styles = StyleSheet.create({
         marginBottom: 20,
         color: '#333',
     },
-    row: {
-        justifyContent: 'space-between',
-        marginBottom: 10,
-    },
     button: {
         backgroundColor: 'white',
         borderRadius: 25,
         borderWidth: 2,
         borderColor: 'black',
-        paddingVertical: 15,
-        paddingHorizontal: 10,
-        width: buttonWidth,
+        paddingVertical: 25,
+        width: 240,
+        height: 90,
+        justifyContent: 'center',
         alignItems: 'center',
-        justifyContent: 'center', 
+        marginVertical: 5,
     },
     buttonText: {
-        fontSize: 18,
+        fontSize: 20,
         color: 'black',
     },
 });

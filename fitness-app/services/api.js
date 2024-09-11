@@ -60,3 +60,43 @@ export const updateCompletedDays = async (username, completedDays) => {
         throw error;
     }
 };
+
+export const changeUsername = async (currentUsername, newUsername, confirmPassword) => {
+    try {
+        const response = await axios.put(`${API_URL}/changeUsername/`, {
+            current_username: currentUsername,
+            new_username: newUsername,
+            password: confirmPassword
+        });
+        return response.data;
+    } catch (error) {
+        console.error('Error changing username:', error);
+        throw error;
+    }
+};
+
+export const changePassword = async (username, currentPassword, newPassword) => {
+    try {
+        const response = await axios.put(`${API_URL}/changePassword/`, {
+            username: username,
+            current_password: currentPassword,
+            new_password: newPassword
+        });
+        return response.data;
+    } catch (error) {
+        console.error('Error changing username:', error);
+        throw error;
+    }
+};
+
+export const deleteAccount = async (username) => {
+    try {
+        const response = await axios.delete(`${API_URL}/deleteAccount/`, {
+            data: {username: username,}
+        });
+        return response.data;
+    } catch (error) {
+        console.error('Error deleting account:', error);
+        throw error;
+    }
+};

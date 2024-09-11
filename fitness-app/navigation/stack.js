@@ -16,6 +16,7 @@ import UserProfileScreen from '../screens/profiles/user-profile';
 import MuscleGroupScreen from '../screens/library/muscle-group-screen';
 import ExercisesScreen from '../screens/library/exercises-screen';
 import PlanDayExercises from '../screens/workout-plan/workout-plan-day';
+import AccountSettingsScreen from '../screens/profiles/account-settings';
 
 const Stack = createStackNavigator();
 
@@ -126,6 +127,19 @@ export const LibraryStack = () => {
         })}
         />
 
+    </Stack.Navigator>
+  );
+};
+
+export const SettingsStack = () => {
+  return (
+    <Stack.Navigator
+      screenOptions={({ navigation }) => ({
+        ...navOptions(navigation),
+        headerTitleAlign: 'center',
+      })}
+    >
+      <Stack.Screen name="Account Settings" component={AccountSettingsScreen} />
     </Stack.Navigator>
   );
 };

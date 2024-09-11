@@ -18,7 +18,7 @@ class RegisterView(APIView):
         username = request.data.get('username')
         password = request.data.get('password')
         email = request.data.get('email')
-        # Create a new user using the CustomUser model
+
         user = CustomUser.objects.create_user(username=username, password=password, email=email, has_plan=False)
         return Response(CustomUserSerializer(user).data, status=status.HTTP_201_CREATED)
 
@@ -107,13 +107,11 @@ class ExerciseViewSet(viewsets.ModelViewSet):
         if exercise_type:
             queryset = queryset.filter(type=exercise_type)
         
-        if muscle_groups:
-            # Check for non-empty muscle groups
-            if muscle_groups[0]:  # Avoid filtering with an empty string
-                q_objects = Q()
-                for group in muscle_groups:
-                    q_objects |= Q(muscle_group__icontains=group)
-                queryset = queryset.filter(q_objects)
+        if muscle_groups and muscle_groups[0]:
+            q_objects = Q()
+            for group in muscle_groups:
+                q_objects |= Q(muscle_group__icontains=group)
+            queryset = queryset.filter(q_objects)
         
         return queryset
     
@@ -166,17 +164,14 @@ class UpdatePlanView(APIView):
         except CustomUser.DoesNotExist:
             return Response({'error': 'User not found'}, status=status.HTTP_404_NOT_FOUND)
 
-        # Delete the user's existing plan(s)
         WorkoutPlan.objects.filter(user=user).delete()
 
-        # Update the user's profile details
         user.fitness_level = fitness_level
         user.preferred_workout_times = preferred_workout_times
         user.plan_week = plan_week
         user.completed_days = completed_days
         user.save()
 
-        # Prepare user data for generating the new plan
         user_data = {
             'username': username,
             'fitnessLevel': fitness_level,
@@ -191,4 +186,44 @@ class UpdatePlanView(APIView):
         print(user_data)
         plan = generate_plan(user_data)
         return Response({"message": "User profile updated and plan generated successfully", "plan": plan}, status=status.HTTP_200_OK)
+
+class ChangeUsernameView(APIView):
+    def put(self, request):
+        currentUsername = request.data.get('current_username')
+        newUsername = request.data.get('new_username')
+        password = request.data.get('password')
+
+        user = authenticate(username=currentUsername, password=password)
+        
+        if user:
+            user.username = newUsername
+            user.save()
+            return Response({'success': 'Username changed successfully'}, status=status.HTTP_200_OK)
+
+        return Response({'error': 'Invalid Credentials'}, status=status.HTTP_400_BAD_REQUEST)
+
+class ChangePasswordView(APIView):
+    def put(self, request):
+        username = request.data.get('username')
+        currentPassword = request.data.get('current_password')
+        newPassword = request.data.get('new_password')
+
+        user = authenticate(username=username, password=currentPassword)
+        
+        if user:
+            user.set_password(newPassword)
+            user.save()
+            return Response({'success': 'Username changed successfully'}, status=status.HTTP_200_OK)
+
+        return Response({'error': 'Invalid Credentials'}, status=status.HTTP_400_BAD_REQUEST)
+    
+class DeleteAccountView(APIView):
+    def delete(self, request):
+        username = request.data.get('username')
+
+        user = CustomUser.objects.get(username=username)
+        if user:
+            user.delete()
+            return Response({"detail": "Account successfully deleted."}, status=status.HTTP_200_OK)
+        return Response({"error": "Invalid credentials."}, status=status.HTTP_400_BAD_REQUEST)
 
