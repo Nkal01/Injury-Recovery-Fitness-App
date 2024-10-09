@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useState } from 'react';
-import { View, Text, FlatList, TouchableOpacity, StyleSheet, Image } from 'react-native';
+import { View, Text, FlatList, TouchableOpacity, StyleSheet, Image, TextInput, Button } from 'react-native';
 import { ExerciseContext } from '../../services/exercise-context';
 import { getExercisesByTypeAndMuscleGroup } from '../../services/api';
 
@@ -8,14 +8,17 @@ const ExercisesScreen = () => {
   const [exercises, setExercises] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedExercise, setSelectedExercise] = useState(null);
+  const [searchQuery, setSearchQuery] = useState(''); // State to store the search query
+  const [filteredExercises, setFilteredExercises] = useState([]); // State for filtered exercises
 
   useEffect(() => {
     const fetchExercises = async () => {
       try {
         const response = await getExercisesByTypeAndMuscleGroup(exerciseType, muscleGroup);
         setExercises(response.data);
+        setFilteredExercises(response.data);
       } catch (error) {
-        console.error("Failed to fetch exercises:", error);
+        console.error('Failed to fetch exercises:', error);
       } finally {
         setLoading(false);
       }
@@ -23,6 +26,13 @@ const ExercisesScreen = () => {
 
     fetchExercises();
   }, [exerciseType, muscleGroup]);
+
+  const handleSearch = () => {
+    const filtered = exercises.filter((exercise) =>
+      exercise.name.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+    setFilteredExercises(filtered);
+  };
 
   const renderItem = ({ item }) => {
     if (selectedExercise?.id !== item.id) {
@@ -35,7 +45,9 @@ const ExercisesScreen = () => {
           <Text style={styles.exerciseDetails}>Type: {item.type}</Text>
           <Text style={styles.exerciseDetails}>Muscle Group: {item.muscle_group}</Text>
           <Text style={styles.exerciseDetails}>
-            {item.equipment && item.equipment !== "nan" ? `Equipment: ${item.equipment}` : 'Equipment: None'}
+            {item.equipment && item.equipment !== 'nan'
+              ? `Equipment: ${item.equipment}`
+              : 'Equipment: None'}
           </Text>
         </TouchableOpacity>
       );
@@ -58,7 +70,9 @@ const ExercisesScreen = () => {
         <Text style={styles.exerciseName}>{item.name}</Text>
         <Text style={styles.exerciseDescription}>{item.description}</Text>
         <Text style={styles.exerciseDetails}>
-          {item.equipment && item.equipment !== "nan" ? `Equipment needed: ${item.equipment}` : 'Equipment needed: None'}
+          {item.equipment && item.equipment !== 'nan'
+            ? `Equipment needed: ${item.equipment}`
+            : 'Equipment needed: None'}
         </Text>
       </TouchableOpacity>
     );
@@ -73,15 +87,30 @@ const ExercisesScreen = () => {
   return (
     <View style={styles.container}>
       <Text style={styles.title}>
-        {muscleGroupText.trim() ? `${exerciseType} Exercises for ${muscleGroupText}` : 'All exercises'}
+        {muscleGroupText.trim()
+          ? `${exerciseType} Exercises for ${muscleGroupText}`
+          : 'All exercises'}
       </Text>
+
+      <View style={styles.searchContainer}>
+        <TextInput
+          style={styles.searchInput}
+          placeholder="Search exercises..."
+          value={searchQuery}
+          onChangeText={setSearchQuery}
+        />
+        <TouchableOpacity style={styles.searchButton} onPress={handleSearch}>
+          <Text style={styles.searchButtonText}>Search</Text>
+        </TouchableOpacity>
+      </View>
+
       {loading ? (
         <Text>Loading...</Text>
-      ) : exercises.length === 0 ? (
+      ) : filteredExercises.length === 0 ? (
         <Text>No exercises found.</Text>
       ) : (
         <FlatList
-          data={exercises}
+          data={filteredExercises}
           keyExtractor={(item) => item.id.toString()}
           renderItem={renderItem}
           contentContainerStyle={styles.list}
@@ -146,6 +175,32 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: 'gray',
   },
+  searchContainer: {
+    flexDirection: 'row',
+    marginBottom: 20,
+    alignItems: 'center',
+  },
+  searchInput: {
+    flex: 1,
+    borderColor: '#ddd',
+    borderWidth: 1,
+    borderRadius: 8,
+    padding: 10,
+    marginRight: 10,
+    backgroundColor: '#fff',
+  },
+  searchButton: {
+    backgroundColor: '#ab92b3',
+    padding: 10,
+    borderRadius: 8,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  searchButtonText: {
+    color: '#fff',
+    fontWeight: 'bold',
+  },
+  
 });
 
 export default ExercisesScreen;

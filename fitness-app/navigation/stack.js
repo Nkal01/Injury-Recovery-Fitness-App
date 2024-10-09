@@ -1,15 +1,10 @@
 import { createStackNavigator } from '@react-navigation/stack';
 import HomeScreen from '../screens/home-screen';
-import EventDetailScreen from '../screens/event-detail-screen';
 import { Ionicons } from '@expo/vector-icons';
 import { navOptions } from './options';
-import ProfilesScreen from '../screens/profiles/not used/profiles-screen';
-import ProfileDetailScreen from '../screens/profiles/not used/profile-detail-screen';
 import StartScreen from '../screens/login-signup/start-screen';
 import LoginScreen from '../screens/login-signup/login-screen';
 import SignupScreen from '../screens/login-signup/signup-screen';
-import { HomeTabs } from './tabs';
-import WorkoutsScreen from '../screens/workouts-screen';
 import UserInfoForm from '../screens/user-info-form';
 import LibraryScreen from '../screens/library/library-screen';
 import UserProfileScreen from '../screens/profiles/user-profile';

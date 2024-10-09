@@ -48,7 +48,8 @@ class LoginView(APIView):
             })
         
         return Response({'error': 'Invalid Credentials'}, status=status.HTTP_400_BAD_REQUEST)
-    
+
+#views.py
 class UserInfoView(APIView):
     def post(self, request):
         username = request.data.get('username')

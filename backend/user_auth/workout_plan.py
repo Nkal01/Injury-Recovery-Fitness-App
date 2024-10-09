@@ -52,7 +52,7 @@ def generate_plan(user_data):
             user_exercise_df.at[i, 'Suitability'] += bonus / 3
 
     # Define the suitability threshold
-    suitability_threshold = 0.5  # Adjust this threshold based on your needs
+    suitability_threshold = 0.5
 
     # Filter exercises based on the threshold
     valid_exercises = user_exercise_df[user_exercise_df['Suitability'] >= suitability_threshold]
